@@ -2,9 +2,9 @@ package tplink
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 )
 
@@ -31,21 +31,21 @@ func Decrypt(enc []byte) string {
 	return string(result)
 }
 
-func Send(ip string, command string) string {
+func Send(ip string, command string) (string, error) {
 	port := "9999"
 	address := net.JoinHostPort(ip, port)
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		log.Fatal("Could not connect to address", err)
+		return "", errors.New("Could not connect to address")
 	}
 	defer conn.Close()
 	fmt.Fprintf(conn, string(Encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
 	if err != nil || len(result) == 0 {
-		log.Fatal("Could not read data back: ", err, result)
+		return "", errors.New("Could not read data back: ")
 	}
 
-	return Decrypt(result[4:])
+	return Decrypt(result[4:]), nil
 }
