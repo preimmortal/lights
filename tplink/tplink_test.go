@@ -28,8 +28,8 @@ func TestDecrypt(t *testing.T) {
 func TestSend(t *testing.T) {
 	lightIPAddress := "192.168.1.105"
 
-	result, err := Send(lightIPAddress, "{\"system\":{\"get_sysinfo\":{}}}")
-	//result, err := Send("192.168.1.105", "{\"system\":{\"set_relay_state\":{\"state\":1}}}")
+	//result, err := Send(lightIPAddress, "{\"system\":{\"get_sysinfo\":{}}}")
+	result, err := Send("192.168.1.105", "{\"system\":{\"set_relay_state\":{\"state\":1}}}")
 	if err != nil {
 		t.Fatalf("Could not execute info command")
 	}

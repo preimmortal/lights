@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/preimmortal/lights/scan"
 )
 
 type Light struct {
@@ -15,12 +17,16 @@ type Light struct {
 type Lights []Light
 
 func GetLights(w http.ResponseWriter, r *http.Request) {
-	lights := Lights{
-		Light{Name: "Test Name", Desc: "Test Description", Status: "Off"},
+	local_ip := "192.168.1.0/24"
+	//result, err := tplink.Send("192.168.1.105", "{\"system\":{\"get_sysinfo\":{}}}")
+	result, err := scan.Scan(local_ip)
+	if err != nil {
+		fmt.Println("got an error", err)
 	}
+	fmt.Println(result)
 
 	fmt.Println("Endpoint Hit: Get Lights endpoint")
-	json.NewEncoder(w).Encode(lights)
+	json.NewEncoder(w).Encode(result)
 }
 
 func PostLights(w http.ResponseWriter, r *http.Request) {

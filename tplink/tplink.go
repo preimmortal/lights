@@ -2,11 +2,20 @@ package tplink
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
 )
+
+//type Info struct {
+//	System     string     `json:"system"`
+//	GetSysInfo System     `json:"get_sysinfo"`
+//	ActiveMode GetSysInfo `json:"active_mode"`
+//}
+
+var TPLINK_API_PORT = "9999"
 
 func Encrypt(unenc string) []byte {
 	key := 171
@@ -32,20 +41,21 @@ func Decrypt(enc []byte) string {
 }
 
 func Send(ip string, command string) (string, error) {
-	port := "9999"
-	address := net.JoinHostPort(ip, port)
+	address := net.JoinHostPort(ip, TPLINK_API_PORT)
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		return "", errors.New("Could not connect to address")
+		return "", err
 	}
 	defer conn.Close()
 	fmt.Fprintf(conn, string(Encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
 	if err != nil || len(result) == 0 {
-		return "", errors.New("Could not read data back: ")
+		return "", errors.New("Could not read data back")
 	}
+
+	json.Marshal(Decrypt(result[4:]))
 
 	return Decrypt(result[4:]), nil
 }
