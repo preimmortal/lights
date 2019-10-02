@@ -25,3 +25,19 @@ func TestScan(t *testing.T) {
 
 	t.Logf("Nmap done: %d hosts up scanned in %3f seconds\n", len(result.Hosts), result.Stats.Finished.Elapsed)
 }
+
+func TestFindDefaultRoute(t *testing.T) {
+	t.Log("Finding Default Route")
+	ip, err := FindDefaultRoute()
+	if err != nil {
+		t.Fatalf("Could not find default route: %v", err)
+	}
+	t.Log("Found IP: ", ip.String())
+
+}
+
+func TestStart(t *testing.T) {
+	if err := Start(); err != nil {
+		t.Fatalf("Could not start scan: %v", err)
+	}
+}

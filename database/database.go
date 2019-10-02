@@ -50,6 +50,21 @@ func Insert(name, ip, port string) error {
 	return nil
 }
 
+func HasIp(ip string) (bool, error) {
+	txn := database.Txn(false)
+	defer txn.Abort()
+
+	raw, err := txn.First("scan", "id", ip)
+	if err != nil {
+		return false, err
+	}
+	if raw == nil {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func ReadAll() (memdb.ResultIterator, error) {
 	txn := database.Txn(false)
 	defer txn.Abort()
