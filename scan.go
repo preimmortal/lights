@@ -119,14 +119,16 @@ func (s scan) Start() error {
 		for _, port := range host.Ports {
 			fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
 			if port.State.State == "open" {
-				//TODO: We are assuming that any host with open 9999 port is an available host, we should also confirm the hostname
-				// insert into database
+				// Check if already in db
 				b, err := db.HasIp(target)
 				if err != nil {
 					return err
 				}
 				if b {
-					db.Insert("TPLink_Plug", host.Addresses[0].Addr, strconv.FormatUint(uint64(port.ID), 10))
+					err := db.Insert("TPLink_Plug", host.Addresses[0].Addr, strconv.FormatUint(uint64(port.ID), 10))
+					if err != nil {
+						return err
+					}
 				}
 			}
 		}
