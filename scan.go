@@ -83,7 +83,7 @@ func (s scan) FindFirstIP() (string, error) {
 		fmt.Println("Host: ", target)
 		for _, port := range host.Ports {
 			fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
-			if port.State.State == "open" && port.ID == TPLINK_API_PORT_INT {
+			if port.State.State == "open" {
 				//TODO: We are assuming that any host with open 9999 port is an available host, we should also confirm the hostname
 				// insert into database
 				return target, nil
