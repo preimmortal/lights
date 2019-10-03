@@ -1,18 +1,20 @@
-package database
+package smarthome
 
 import (
 	"github.com/hashicorp/go-memdb"
 )
 
-type Scan struct {
+type database struct{}
+
+type DBScan struct {
 	Name string
 	Ip   string
 	Port string
 }
 
-var database *memdb.MemDB
+var db *memdb.MemDB
 
-func Init() error {
+func (d *database) Init() error {
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
 			"scan": &memdb.TableSchema{
@@ -28,19 +30,18 @@ func Init() error {
 		},
 	}
 
-	db, err := memdb.NewMemDB(schema)
+	tmpdb, err := memdb.NewMemDB(schema)
 	if err != nil {
 		return err
 	}
-
-	database = db
+	db = tmpdb
 
 	return nil
 }
 
-func Insert(name, ip, port string) error {
-	data := &Scan{name, ip, port}
-	txn := database.Txn(true)
+func (d *database) Insert(name, ip, port string) error {
+	data := &DBScan{name, ip, port}
+	txn := db.Txn(true)
 	if err := txn.Insert("scan", data); err != nil {
 		return err
 	}
@@ -50,8 +51,8 @@ func Insert(name, ip, port string) error {
 	return nil
 }
 
-func HasIp(ip string) (bool, error) {
-	txn := database.Txn(false)
+func (d *database) HasIp(ip string) (bool, error) {
+	txn := db.Txn(false)
 	defer txn.Abort()
 
 	raw, err := txn.First("scan", "id", ip)
@@ -65,8 +66,8 @@ func HasIp(ip string) (bool, error) {
 	return true, nil
 }
 
-func ReadAll() (memdb.ResultIterator, error) {
-	txn := database.Txn(false)
+func (d *database) ReadAll() (memdb.ResultIterator, error) {
+	txn := db.Txn(false)
 	defer txn.Abort()
 
 	it, err := txn.Get("scan", "id")

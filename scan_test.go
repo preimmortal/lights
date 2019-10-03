@@ -1,13 +1,14 @@
-package scan
+package smarthome
 
 import (
 	"testing"
 )
 
 func TestScan(t *testing.T) {
+	s := scan{}
 	local_ip := "192.168.1.0/24"
 	t.Log("Scanning ", local_ip)
-	result, err := Scan(local_ip)
+	result, err := s.Scan(local_ip)
 	if err != nil {
 		t.Fatalf("Could not complete scan: %v", err)
 	}
@@ -27,8 +28,9 @@ func TestScan(t *testing.T) {
 }
 
 func TestFindDefaultRoute(t *testing.T) {
+	s := scan{}
 	t.Log("Finding Default Route")
-	ip, err := FindDefaultRoute()
+	ip, err := s.FindDefaultRoute()
 	if err != nil {
 		t.Fatalf("Could not find default route: %v", err)
 	}
@@ -37,7 +39,17 @@ func TestFindDefaultRoute(t *testing.T) {
 }
 
 func TestStart(t *testing.T) {
-	if err := Start(); err != nil {
+	s := scan{}
+	if err := s.Start(); err != nil {
 		t.Fatalf("Could not start scan: %v", err)
 	}
+}
+
+func TestFindFirstIP(t *testing.T) {
+	s := scan{}
+	ip, err := s.FindFirstIP()
+	if err != nil {
+		t.Fatalf("Could not find any IP: %v", err)
+	}
+	t.Log("Found IP: ", ip)
 }

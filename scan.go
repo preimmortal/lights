@@ -1,4 +1,4 @@
-package scan
+package smarthome
 
 import (
 	"context"
@@ -11,18 +11,18 @@ import (
 	"time"
 
 	"github.com/Ullaakut/nmap"
-	"github.com/preimmortal/lights/database"
-	"github.com/preimmortal/lights/tplink"
 )
 
+type scan struct{}
+
 // Scan implements a searcher for local network light devices
-func Scan(ip string) (*nmap.Run, error) {
+func (s scan) Scan(ip string) (*nmap.Run, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	scanner, err := nmap.NewScanner(
 		nmap.WithTargets(ip),
-		nmap.WithPorts(tplink.TPLINK_API_PORT),
+		nmap.WithPorts(TPLINK_API_PORT),
 		nmap.WithContext(ctx),
 	)
 	if err != nil {
@@ -37,7 +37,7 @@ func Scan(ip string) (*nmap.Run, error) {
 	return result, nil
 }
 
-func parseLinuxIPRouteShow(output []byte) (net.IP, error) {
+func (s scan) parseLinuxIPRouteShow(output []byte) (net.IP, error) {
 	// Linux '/usr/bin/ip route show' format looks like this:
 	// default via 192.168.178.1 dev wlp3s0  metric 303
 	// 192.168.178.0/24 dev wlp3s0  proto kernel  scope link  src 192.168.178.76  metric 303
@@ -55,29 +55,59 @@ func parseLinuxIPRouteShow(output []byte) (net.IP, error) {
 	return nil, errors.New("No gateway found")
 }
 
-func FindDefaultRoute() (net.IP, error) {
+func (s scan) FindDefaultRoute() (net.IP, error) {
 	routeCmd := exec.Command("ip", "route", "show")
 	output, err := routeCmd.CombinedOutput()
 	if err != nil {
 		return nil, err
 	}
 
-	return parseLinuxIPRouteShow(output)
+	return s.parseLinuxIPRouteShow(output)
 }
 
-func Start() error {
+func (s scan) FindFirstIP() (string, error) {
+	ip, err := s.FindDefaultRoute()
+	if err != nil {
+		return "", err
+	}
+	iprange := fmt.Sprintf("%s/24", ip.String())
+
+	hostlist, err := s.Scan(iprange)
+	if err != nil {
+		return "", err
+	}
+
+	for _, host := range hostlist.Hosts {
+		target := host.Addresses[0].Addr
+		//fmt.Println("Host: ", host.Addresses[0].Addr)
+		fmt.Println("Host: ", target)
+		for _, port := range host.Ports {
+			fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
+			if port.State.State == "open" && port.ID == TPLINK_API_PORT_INT {
+				//TODO: We are assuming that any host with open 9999 port is an available host, we should also confirm the hostname
+				// insert into database
+				return target, nil
+			}
+		}
+	}
+	return "", errors.New("No Valid IP")
+
+}
+
+func (s scan) Start() error {
 	// Initialize Database
-	if err := database.Init(); err != nil {
+	db := database{}
+	if err := db.Init(); err != nil {
 		return err
 	}
 
-	ip, err := FindDefaultRoute()
+	ip, err := s.FindDefaultRoute()
 	if err != nil {
 		return err
 	}
 	iprange := fmt.Sprintf("%s/24", ip.String())
 
-	hostlist, err := Scan(iprange)
+	hostlist, err := s.Scan(iprange)
 	if err != nil {
 		return err
 	}
@@ -91,12 +121,12 @@ func Start() error {
 			if port.State.State == "open" {
 				//TODO: We are assuming that any host with open 9999 port is an available host, we should also confirm the hostname
 				// insert into database
-				b, err := database.HasIp(target)
+				b, err := db.HasIp(target)
 				if err != nil {
 					return err
 				}
 				if b {
-					database.Insert("TPLink_Plug", host.Addresses[0].Addr, strconv.FormatUint(uint64(port.ID), 10))
+					db.Insert("TPLink_Plug", host.Addresses[0].Addr, strconv.FormatUint(uint64(port.ID), 10))
 				}
 			}
 		}

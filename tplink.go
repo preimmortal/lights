@@ -1,4 +1,4 @@
-package tplink
+package smarthome
 
 import (
 	"encoding/binary"
@@ -14,10 +14,12 @@ import (
 //	GetSysInfo System     `json:"get_sysinfo"`
 //	ActiveMode GetSysInfo `json:"active_mode"`
 //}
+type tplink struct{}
 
-var TPLINK_API_PORT = "9999"
+const TPLINK_API_PORT = "9999"
+const TPLINK_API_PORT_INT = 9999
 
-func Encrypt(unenc string) []byte {
+func (t tplink) encrypt(unenc string) []byte {
 	key := 171
 	result := make([]byte, 4)
 	binary.BigEndian.PutUint32(result, uint32(len(unenc)))
@@ -29,7 +31,7 @@ func Encrypt(unenc string) []byte {
 	return result
 }
 
-func Decrypt(enc []byte) string {
+func (t tplink) decrypt(enc []byte) string {
 	key := 171
 	result := []byte("")
 	for _, c := range enc {
@@ -40,7 +42,7 @@ func Decrypt(enc []byte) string {
 	return string(result)
 }
 
-func Send(ip string, command string) (string, error) {
+func (t tplink) Send(ip string, command string) (string, error) {
 	address := net.JoinHostPort(ip, TPLINK_API_PORT)
 
 	conn, err := net.Dial("tcp", address)
@@ -48,14 +50,14 @@ func Send(ip string, command string) (string, error) {
 		return "", err
 	}
 	defer conn.Close()
-	fmt.Fprintf(conn, string(Encrypt(command)))
+	fmt.Fprintf(conn, string(t.encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
 	if err != nil || len(result) == 0 {
 		return "", errors.New("Could not read data back")
 	}
 
-	json.Marshal(Decrypt(result[4:]))
+	json.Marshal(t.decrypt(result[4:]))
 
-	return Decrypt(result[4:]), nil
+	return t.decrypt(result[4:]), nil
 }
