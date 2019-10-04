@@ -6,7 +6,7 @@ import (
 
 func TestDatabase(t *testing.T) {
 	t.Logf("Testing Database Init")
-	db := database{}
+	db := Database{}
 	if err := db.Init(); err != nil {
 		t.Fatalf("Could not create database: %v", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/go-memdb"
 )
 
-type database struct{}
+type Database struct{}
 
 type DBScan struct {
 	Name string
@@ -14,7 +14,7 @@ type DBScan struct {
 
 var db *memdb.MemDB
 
-func (d *database) Init() error {
+func (d *Database) Init() error {
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
 			"scan": &memdb.TableSchema{
@@ -39,7 +39,7 @@ func (d *database) Init() error {
 	return nil
 }
 
-func (d *database) Insert(name, ip, port string) error {
+func (d *Database) Insert(name, ip, port string) error {
 	data := &DBScan{name, ip, port}
 	txn := db.Txn(true)
 	if err := txn.Insert("scan", data); err != nil {
@@ -51,7 +51,7 @@ func (d *database) Insert(name, ip, port string) error {
 	return nil
 }
 
-func (d *database) HasIp(ip string) (bool, error) {
+func (d *Database) HasIp(ip string) (bool, error) {
 	txn := db.Txn(false)
 	defer txn.Abort()
 
@@ -66,7 +66,7 @@ func (d *database) HasIp(ip string) (bool, error) {
 	return true, nil
 }
 
-func (d *database) ReadAll() (memdb.ResultIterator, error) {
+func (d *Database) ReadAll() (memdb.ResultIterator, error) {
 	txn := db.Txn(false)
 	defer txn.Abort()
 

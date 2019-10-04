@@ -14,20 +14,20 @@ type Light struct {
 
 type Lights []Light
 
-func GetLights(w http.ResponseWriter, r *http.Request) {
+func GetDevices(w http.ResponseWriter, r *http.Request) {
 
 	lights := Lights{
 		Light{Name: "Post Name", Desc: "Post Description", Status: "On"},
 	}
-	fmt.Println("Endpoint Hit: Get Lights endpoint")
+	fmt.Println("Endpoint Hit: Get Devices endpoint")
 	json.NewEncoder(w).Encode(lights)
 }
 
-func PostLights(w http.ResponseWriter, r *http.Request) {
+func PostDevices(w http.ResponseWriter, r *http.Request) {
 	lights := Lights{
 		Light{Name: "Post Name", Desc: "Post Description", Status: "On"},
 	}
 
-	fmt.Println("Endpoint Hit: Post Lights endpoint")
+	fmt.Println("Endpoint Hit: Post Devices endpoint")
 	json.NewEncoder(w).Encode(lights)
 }

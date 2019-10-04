@@ -13,10 +13,12 @@ import (
 	"github.com/Ullaakut/nmap"
 )
 
-type scan struct{}
+type Scan struct {
+	Db *Database
+}
 
 // Scan implements a searcher for local network light devices
-func (s scan) Scan(ip string) (*nmap.Run, error) {
+func (s *Scan) Scan(ip string) (*nmap.Run, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -37,7 +39,7 @@ func (s scan) Scan(ip string) (*nmap.Run, error) {
 	return result, nil
 }
 
-func (s scan) parseLinuxIPRouteShow(output []byte) (net.IP, error) {
+func (s *Scan) parseLinuxIPRouteShow(output []byte) (net.IP, error) {
 	// Linux '/usr/bin/ip route show' format looks like this:
 	// default via 192.168.178.1 dev wlp3s0  metric 303
 	// 192.168.178.0/24 dev wlp3s0  proto kernel  scope link  src 192.168.178.76  metric 303
@@ -55,7 +57,7 @@ func (s scan) parseLinuxIPRouteShow(output []byte) (net.IP, error) {
 	return nil, errors.New("No gateway found")
 }
 
-func (s scan) FindDefaultRoute() (net.IP, error) {
+func (s *Scan) findDefaultRoute() (net.IP, error) {
 	routeCmd := exec.Command("ip", "route", "show")
 	output, err := routeCmd.CombinedOutput()
 	if err != nil {
@@ -65,8 +67,8 @@ func (s scan) FindDefaultRoute() (net.IP, error) {
 	return s.parseLinuxIPRouteShow(output)
 }
 
-func (s scan) FindFirstIP() (string, error) {
-	ip, err := s.FindDefaultRoute()
+func (s *Scan) FindFirstIP() (string, error) {
+	ip, err := s.findDefaultRoute()
 	if err != nil {
 		return "", err
 	}
@@ -94,14 +96,13 @@ func (s scan) FindFirstIP() (string, error) {
 
 }
 
-func (s scan) Start() error {
+func (s *Scan) Start() error {
 	// Initialize Database
-	db := database{}
-	if err := db.Init(); err != nil {
+	if err := s.Db.Init(); err != nil {
 		return err
 	}
 
-	ip, err := s.FindDefaultRoute()
+	ip, err := s.findDefaultRoute()
 	if err != nil {
 		return err
 	}
@@ -112,26 +113,31 @@ func (s scan) Start() error {
 		return err
 	}
 
-	for _, host := range hostlist.Hosts {
-		target := host.Addresses[0].Addr
-		//fmt.Println("Host: ", host.Addresses[0].Addr)
-		fmt.Println("Host: ", target)
-		for _, port := range host.Ports {
-			fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
-			if port.State.State == "open" {
-				// Check if already in db
-				b, err := db.HasIp(target)
-				if err != nil {
-					return err
-				}
-				if b {
-					err := db.Insert("TPLink_Plug", host.Addresses[0].Addr, strconv.FormatUint(uint64(port.ID), 10))
+	for {
+		for _, host := range hostlist.Hosts {
+			target := host.Addresses[0].Addr
+			for _, port := range host.Ports {
+				if port.State.State == "open" {
+					fmt.Printf("Host: %s - %s - %s\n", target, host.Addresses[0].AddrType, host.Addresses[0].Vendor)
+					fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
+					// Check if already in db
+					b, err := s.Db.HasIp(target)
 					if err != nil {
 						return err
+					}
+					if b {
+						fmt.Printf("Inserting %s into db\n", target)
+						err := s.Db.Insert("TPLink_Plug", target, strconv.FormatUint(uint64(port.ID), 10))
+						if err != nil {
+							return err
+						}
+					} else {
+						fmt.Printf("Skipping %s already db\n", target)
 					}
 				}
 			}
 		}
+		time.Sleep(time.Minute)
 	}
 
 	return nil

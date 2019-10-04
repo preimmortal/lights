@@ -9,7 +9,7 @@ func setupSubTest() {
 }
 
 func TestEncrypt(t *testing.T) {
-	tp := tplink{}
+	tp := Tplink{}
 	encodedString := tp.encrypt("hello")
 	expectedBytes := string([]byte{0, 0, 0, 5, 195, 166, 202, 166, 201})
 
@@ -19,7 +19,7 @@ func TestEncrypt(t *testing.T) {
 }
 
 func TestDecrypt(t *testing.T) {
-	tp := tplink{}
+	tp := Tplink{}
 	encodedBytes := []byte{195, 166, 202, 166, 201}
 	expectedString := "hello"
 
@@ -32,8 +32,8 @@ func TestDecrypt(t *testing.T) {
 
 // Test_Positive_Send implements a positive send ip test
 func Test_Positive_Send_Info(t *testing.T) {
-	tp := tplink{}
-	sn := scan{}
+	tp := Tplink{}
+	sn := Scan{}
 	ip, err := sn.FindFirstIP()
 	if err != nil {
 		t.Fatalf("Could not find any IP")
@@ -45,39 +45,40 @@ func Test_Positive_Send_Info(t *testing.T) {
 
 	fmt.Println(result)
 }
-func Test_Positive_Send_PlugOn(t *testing.T) {
-	tp := tplink{}
-	sn := scan{}
-	ip, err := sn.FindFirstIP()
-	if err != nil {
-		t.Fatalf("Could not find any IP")
-	}
-	result, err := tp.Send(ip, "{\"system\":{\"set_relay_state\":{\"state\":1}}}")
-	if err != nil {
-		t.Fatalf("Could not execute info command")
-	}
 
-	fmt.Println(result)
-}
+//func Test_Positive_Send_PlugOn(t *testing.T) {
+//	tp := Tplink{}
+//	sn := Scan{}
+//	ip, err := sn.FindFirstIP()
+//	if err != nil {
+//		t.Fatalf("Could not find any IP")
+//	}
+//	result, err := tp.Send(ip, "{\"system\":{\"set_relay_state\":{\"state\":1}}}")
+//	if err != nil {
+//		t.Fatalf("Could not execute info command")
+//	}
+//
+//	fmt.Println(result)
+//}
 
-func Test_Positive_Send_PlugOff(t *testing.T) {
-	tp := tplink{}
-	sn := scan{}
-	ip, err := sn.FindFirstIP()
-	if err != nil {
-		t.Fatalf("Could not find any IP")
-	}
-	result, err := tp.Send(ip, "{\"system\":{\"set_relay_state\":{\"state\":0}}}")
-	if err != nil {
-		t.Fatalf("Could not execute info command")
-	}
-
-	fmt.Println(result)
-}
+//func Test_Positive_Send_PlugOff(t *testing.T) {
+//	tp := Tplink{}
+//	sn := Scan{}
+//	ip, err := sn.FindFirstIP()
+//	if err != nil {
+//		t.Fatalf("Could not find any IP")
+//	}
+//	result, err := tp.Send(ip, "{\"system\":{\"set_relay_state\":{\"state\":0}}}")
+//	if err != nil {
+//		t.Fatalf("Could not execute info command")
+//	}
+//
+//	fmt.Println(result)
+//}
 
 // Test_Negative_Send_BadIP implements a negative bad ip test
 func Test_Negative_Send_BadIP(t *testing.T) {
-	tp := tplink{}
+	tp := Tplink{}
 	t.Log("Negative Test - Bad IP")
 	// Test  Bad IP
 	bad_ip_result, err := tp.Send("999.999.999.999", "{\"system\":{\"get_sysinfo\":{}}}")
@@ -88,8 +89,8 @@ func Test_Negative_Send_BadIP(t *testing.T) {
 
 // Test_Negative_Send_BadCall implements a negative bad call test
 func Test_Negative_Send_BadCall(t *testing.T) {
-	tp := tplink{}
-	sn := scan{}
+	tp := Tplink{}
+	sn := Scan{}
 	ip, err := sn.FindFirstIP()
 	if err != nil {
 		t.Fatalf("Could not find any IP")

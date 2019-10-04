@@ -5,7 +5,8 @@ import (
 )
 
 func TestScan(t *testing.T) {
-	s := scan{}
+	db := &Database{}
+	s := Scan{db}
 	local_ip := "192.168.1.0/24"
 	t.Log("Scanning ", local_ip)
 	result, err := s.Scan(local_ip)
@@ -28,9 +29,10 @@ func TestScan(t *testing.T) {
 }
 
 func TestFindDefaultRoute(t *testing.T) {
-	s := scan{}
+	db := &Database{}
+	s := Scan{db}
 	t.Log("Finding Default Route")
-	ip, err := s.FindDefaultRoute()
+	ip, err := s.findDefaultRoute()
 	if err != nil {
 		t.Fatalf("Could not find default route: %v", err)
 	}
@@ -39,14 +41,16 @@ func TestFindDefaultRoute(t *testing.T) {
 }
 
 func TestStart(t *testing.T) {
-	s := scan{}
+	db := &Database{}
+	s := Scan{db}
 	if err := s.Start(); err != nil {
 		t.Fatalf("Could not start scan: %v", err)
 	}
 }
 
 func TestFindFirstIP(t *testing.T) {
-	s := scan{}
+	db := &Database{}
+	s := Scan{db}
 	ip, err := s.FindFirstIP()
 	if err != nil {
 		t.Fatalf("Could not find any IP: %v", err)

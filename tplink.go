@@ -14,12 +14,12 @@ import (
 //	GetSysInfo System     `json:"get_sysinfo"`
 //	ActiveMode GetSysInfo `json:"active_mode"`
 //}
-type tplink struct{}
+type Tplink struct{}
 
 const TPLINK_API_PORT = "9999"
 const TPLINK_API_PORT_INT = 9999
 
-func (t tplink) encrypt(unenc string) []byte {
+func (t Tplink) encrypt(unenc string) []byte {
 	key := 171
 	result := make([]byte, 4)
 	binary.BigEndian.PutUint32(result, uint32(len(unenc)))
@@ -31,7 +31,7 @@ func (t tplink) encrypt(unenc string) []byte {
 	return result
 }
 
-func (t tplink) decrypt(enc []byte) string {
+func (t Tplink) decrypt(enc []byte) string {
 	key := 171
 	result := []byte("")
 	for _, c := range enc {
@@ -42,7 +42,7 @@ func (t tplink) decrypt(enc []byte) string {
 	return string(result)
 }
 
-func (t tplink) Send(ip string, command string) (string, error) {
+func (t Tplink) Send(ip string, command string) (string, error) {
 	address := net.JoinHostPort(ip, TPLINK_API_PORT)
 
 	conn, err := net.Dial("tcp", address)
