@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+
+	"github.com/golang/glog"
 )
 
 //type Info struct {
@@ -46,9 +48,9 @@ func (t Tplink) decrypt(enc []byte) string {
 }
 
 func (t Tplink) Send(ip string, command string) (string, error) {
-	fmt.Printf("Sending command \"%s\"", command)
+	glog.Infof("Sending command \"%s\"", command)
 	address := net.JoinHostPort(ip, TPLINK_API_PORT)
-	fmt.Printf("\tAddress: \"%s\" ", address)
+	glog.Infof("\tAddress: \"%s\" ", address)
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {

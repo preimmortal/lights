@@ -32,7 +32,7 @@ func GetDevices(w http.ResponseWriter, r *http.Request) {
 	data := Devices{}
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*smarthome.DBScan)
-		fmt.Printf("  %s - %s - %s\n", p.Name, p.Ip, p.Port)
+		glog.Infof("  %s - %s - %s\n", p.Name, p.Ip, p.Port)
 		device := Device{Name: p.Name, Ip: p.Ip, Port: p.Port}
 		data = append(data, device)
 	}
@@ -42,10 +42,10 @@ func GetDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetDeviceInfo(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Getting device info")
+	glog.Info("Getting device info")
 	vars := mux.Vars(r)
 	tp := smarthome.Tplink{}
-	fmt.Println("\tDevice: ", vars["deviceip"])
+	glog.Info("\tDevice: ", vars["deviceip"])
 	info, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
 	if err != nil {
 		glog.Errorf("Could not send info request: %v", err)
@@ -59,7 +59,7 @@ type API_CONTRACT_PostDeviceAction struct {
 }
 
 func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Posting device action")
+	glog.Info("Posting device action")
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	api := &API_CONTRACT_PostDeviceAction{}
@@ -70,7 +70,7 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 		glog.Error(err)
 	}
 
-	fmt.Println("Got Action: ", api.State)
+	glog.Info("Got Action: ", api.State)
 
 	switch api.State {
 	case "on":
@@ -83,8 +83,8 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 
 	//Initialize TPLink Obj
 	tp := smarthome.Tplink{}
-	fmt.Println("\tDevice: ", vars["deviceip"])
-	fmt.Println("\tAction: ", action)
+	glog.Info("\tDevice: ", vars["deviceip"])
+	glog.Info("\tAction: ", action)
 
 	// Send Action
 	info, err := tp.Send(vars["deviceip"], action)
@@ -96,7 +96,6 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Homepage Endpoint hit")
 	glog.Info(w, "Homepage Endpoint hit")
 }
 

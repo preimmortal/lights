@@ -1,8 +1,9 @@
 package smarthome
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/golang/glog"
 )
 
 func setupSubTest() {
@@ -43,7 +44,7 @@ func Test_Positive_Send_Info(t *testing.T) {
 		t.Fatal("Could not execute info command: ", err)
 	}
 
-	fmt.Println(result)
+	glog.Info(result)
 }
 
 //func Test_Positive_Send_PlugOn(t *testing.T) {
@@ -58,7 +59,7 @@ func Test_Positive_Send_Info(t *testing.T) {
 //		t.Fatalf("Could not execute info command")
 //	}
 //
-//	fmt.Println(result)
+//	glog.Info(result)
 //}
 
 //func Test_Positive_Send_PlugOff(t *testing.T) {
@@ -73,7 +74,7 @@ func Test_Positive_Send_Info(t *testing.T) {
 //		t.Fatalf("Could not execute info command")
 //	}
 //
-//	fmt.Println(result)
+//	glog.Info(result)
 //}
 
 // Test_Negative_Send_BadIP implements a negative bad ip test
