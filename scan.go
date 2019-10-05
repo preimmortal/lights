@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"os/exec"
 	"strconv"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/Ullaakut/nmap"
-	"github.com/golang/glog"
 )
 
 type Scan struct {
@@ -69,7 +69,7 @@ func (s *Scan) findDefaultRoute() (net.IP, error) {
 }
 
 func (s *Scan) FindFirstIP() (string, error) {
-	glog.Info("Scanner Finding First IP Address")
+	log.Print("Scanner Finding First IP Address")
 	ip, err := s.findDefaultRoute()
 	if err != nil {
 		return "", err
@@ -83,9 +83,9 @@ func (s *Scan) FindFirstIP() (string, error) {
 
 	for _, host := range hostlist.Hosts {
 		target := host.Addresses[0].Addr
-		glog.Info("Host: ", target)
+		log.Print("Host: ", target)
 		for _, port := range host.Ports {
-			glog.Infof("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
+			log.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
 			if port.State.State == "open" {
 				//TODO: We are assuming that any host with open 9999 port is an available host, we should also confirm the hostname
 				// insert into database
@@ -98,7 +98,7 @@ func (s *Scan) FindFirstIP() (string, error) {
 }
 
 func (s *Scan) Start() error {
-	glog.Info("Starting Scanner")
+	log.Print("Starting Scanner")
 	ip, err := s.findDefaultRoute()
 	if err != nil {
 		return err
@@ -115,21 +115,21 @@ func (s *Scan) Start() error {
 			target := host.Addresses[0].Addr
 			for _, port := range host.Ports {
 				if port.State.State == "open" {
-					glog.Infof("Host: %s - %s - %s\n", target, host.Addresses[0].AddrType, host.Addresses[0].Vendor)
-					glog.Infof("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
+					log.Printf("Host: %s - %s - %s\n", target, host.Addresses[0].AddrType, host.Addresses[0].Vendor)
+					log.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
 					// Check if already in db
 					b, err := s.Db.HasIp(target)
 					if err != nil {
 						return err
 					}
 					if !b {
-						glog.Infof("Inserting %s into db\n", target)
+						log.Printf("Inserting %s into db\n", target)
 						err := s.Db.Insert("TPLink_Plug", target, strconv.FormatUint(uint64(port.ID), 10))
 						if err != nil {
 							return err
 						}
 					} else {
-						glog.Infof("Skipping %s already db\n", target)
+						log.Printf("Skipping %s already db\n", target)
 					}
 				}
 			}

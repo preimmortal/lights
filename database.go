@@ -1,7 +1,8 @@
 package smarthome
 
 import (
-	"github.com/golang/glog"
+	"log"
+
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -60,7 +61,7 @@ func (d *Database) HasIp(ip string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	glog.Info("Database HasIP Returned: ", raw)
+	log.Print("Database HasIP Returned: ", raw)
 	if raw == nil {
 		return false, nil
 	}

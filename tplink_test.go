@@ -40,7 +40,7 @@ func TestDecrypt(t *testing.T) {
 //		t.Fatal("Could not execute info command: ", err)
 //	}
 //
-//	glog.Info(result)
+//	log.Print(result)
 //}
 
 //TODO: This only works locally
@@ -56,7 +56,7 @@ func TestDecrypt(t *testing.T) {
 //		t.Fatalf("Could not execute info command")
 //	}
 //
-//	glog.Info(result)
+//	log.Print(result)
 //}
 
 //TODO: This only works locally
@@ -72,7 +72,7 @@ func TestDecrypt(t *testing.T) {
 //		t.Fatalf("Could not execute info command")
 //	}
 //
-//	glog.Info(result)
+//	log.Print(result)
 //}
 
 //TODO: This only works locally, travisci does not seem to allow to negative tests
