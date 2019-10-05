@@ -4,10 +4,9 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net"
-
-	"github.com/golang/glog"
 )
 
 //type Info struct {
@@ -19,6 +18,9 @@ type Tplink struct{}
 
 const TPLINK_API_PORT = "9999"
 const TPLINK_API_PORT_INT = 9999
+const TPLINK_API_INFO = "{\"system\":{\"get_sysinfo\":{}}}"
+const TPLINK_API_RELAY_ON = "{\"system\":{\"set_relay_state\":{\"state\":1}}}"
+const TPLINK_API_RELAY_OFF = "{\"system\":{\"set_relay_state\":{\"state\":0}}}"
 
 func (t Tplink) encrypt(unenc string) []byte {
 	key := 171
@@ -44,18 +46,23 @@ func (t Tplink) decrypt(enc []byte) string {
 }
 
 func (t Tplink) Send(ip string, command string) (string, error) {
+	fmt.Printf("Sending command \"%s\"", command)
 	address := net.JoinHostPort(ip, TPLINK_API_PORT)
+	fmt.Printf("\tAddress: \"%s\" ", address)
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		return "", err
 	}
 	defer conn.Close()
-	glog.Info(conn, string(t.encrypt(command)))
+	fmt.Fprintf(conn, string(t.encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
-	if err != nil || len(result) == 0 {
-		return "", errors.New("Could not read data back")
+	if err != nil {
+		return "", err
+	}
+	if len(result) == 0 {
+		return "", errors.New("No results read")
 	}
 
 	json.Marshal(t.decrypt(result[4:]))

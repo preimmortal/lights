@@ -40,7 +40,7 @@ func Test_Positive_Send_Info(t *testing.T) {
 	}
 	result, err := tp.Send(ip, "{\"system\":{\"get_sysinfo\":{}}}")
 	if err != nil {
-		t.Fatalf("Could not execute info command")
+		t.Fatal("Could not execute info command: ", err)
 	}
 
 	fmt.Println(result)

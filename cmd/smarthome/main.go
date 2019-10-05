@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -40,13 +41,58 @@ func GetDevices(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func PostDevices(w http.ResponseWriter, r *http.Request) {
-	devices := Devices{
-		Device{Name: "Post Name", Ip: "1.1.1.1", Port: "9999"},
+func GetDeviceInfo(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Getting device info")
+	vars := mux.Vars(r)
+	tp := smarthome.Tplink{}
+	fmt.Println("\tDevice: ", vars["deviceip"])
+	info, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
+	if err != nil {
+		glog.Errorf("Could not send info request: %v", err)
+	}
+	glog.Info("Endpoint Hit: Post Device Info endpoint")
+	json.NewEncoder(w).Encode(info)
+}
+
+type API_CONTRACT_PostDeviceAction struct {
+	State string `json:"state"`
+}
+
+func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Posting device action")
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	api := &API_CONTRACT_PostDeviceAction{}
+	action := ""
+
+	//Extract Body information
+	if err := json.NewDecoder(r.Body).Decode(api); err != nil {
+		glog.Error(err)
 	}
 
-	glog.Info("Endpoint Hit: Post Devices endpoint")
-	json.NewEncoder(w).Encode(devices)
+	fmt.Println("Got Action: ", api.State)
+
+	switch api.State {
+	case "on":
+		action = smarthome.TPLINK_API_RELAY_ON
+	case "off":
+		action = smarthome.TPLINK_API_RELAY_OFF
+	default:
+		glog.Error(errors.New("state must be defined as \"on\" or \"off\""))
+	}
+
+	//Initialize TPLink Obj
+	tp := smarthome.Tplink{}
+	fmt.Println("\tDevice: ", vars["deviceip"])
+	fmt.Println("\tAction: ", action)
+
+	// Send Action
+	info, err := tp.Send(vars["deviceip"], action)
+	if err != nil {
+		glog.Errorf("Could not send info request: %v", err)
+	}
+	glog.Info("Endpoint Hit: Post Device Action endpoint")
+	json.NewEncoder(w).Encode(info)
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +104,8 @@ func handleRequests() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/devices", GetDevices).Methods("GET")
-	router.HandleFunc("/devices", PostDevices).Methods("POST")
+	router.HandleFunc("/devices/{deviceip}", GetDeviceInfo).Methods("GET")
+	router.HandleFunc("/devices/{deviceip}", PostDeviceAction).Methods("POST")
 	glog.Fatal(http.ListenAndServe(":8081", router))
 }
 
