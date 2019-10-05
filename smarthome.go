@@ -2,8 +2,9 @@ package smarthome
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/golang/glog"
 )
 
 type Light struct {
@@ -15,11 +16,10 @@ type Light struct {
 type Lights []Light
 
 func GetDevices(w http.ResponseWriter, r *http.Request) {
-
 	lights := Lights{
 		Light{Name: "Post Name", Desc: "Post Description", Status: "On"},
 	}
-	fmt.Println("Endpoint Hit: Get Devices endpoint")
+	glog.Info("Endpoint Hit: Get Devices endpoint")
 	json.NewEncoder(w).Encode(lights)
 }
 
@@ -28,6 +28,6 @@ func PostDevices(w http.ResponseWriter, r *http.Request) {
 		Light{Name: "Post Name", Desc: "Post Description", Status: "On"},
 	}
 
-	fmt.Println("Endpoint Hit: Post Devices endpoint")
+	glog.Info("Endpoint Hit: Post Devices endpoint")
 	json.NewEncoder(w).Encode(lights)
 }

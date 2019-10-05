@@ -2,9 +2,9 @@ package smarthome
 
 import (
 	"context"
-	"fmt"
 	"time"
 
+	"github.com/golang/glog"
 	"github.com/grandcat/zeroconf"
 )
 
@@ -18,9 +18,9 @@ func (r resolver) Init() error {
 	entries := make(chan *zeroconf.ServiceEntry)
 	go func(results <-chan *zeroconf.ServiceEntry) {
 		for entry := range results {
-			fmt.Println(entry)
+			glog.Info(entry)
 		}
-		fmt.Println("No more entries")
+		glog.Info("No more entries")
 	}(entries)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)

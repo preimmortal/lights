@@ -4,9 +4,10 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net"
+
+	"github.com/golang/glog"
 )
 
 //type Info struct {
@@ -50,7 +51,7 @@ func (t Tplink) Send(ip string, command string) (string, error) {
 		return "", err
 	}
 	defer conn.Close()
-	fmt.Fprintf(conn, string(t.encrypt(command)))
+	glog.Info(conn, string(t.encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
 	if err != nil || len(result) == 0 {
