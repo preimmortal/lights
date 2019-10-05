@@ -2,12 +2,7 @@ package smarthome
 
 import (
 	"testing"
-
-	"github.com/golang/glog"
 )
-
-func setupSubTest() {
-}
 
 func TestEncrypt(t *testing.T) {
 	tp := Tplink{}
@@ -31,22 +26,24 @@ func TestDecrypt(t *testing.T) {
 	}
 }
 
+//TODO: This only works locally
 // Test_Positive_Send implements a positive send ip test
-func Test_Positive_Send_Info(t *testing.T) {
-	tp := Tplink{}
-	sn := Scan{}
-	ip, err := sn.FindFirstIP()
-	if err != nil {
-		t.Fatalf("Could not find any IP")
-	}
-	result, err := tp.Send(ip, "{\"system\":{\"get_sysinfo\":{}}}")
-	if err != nil {
-		t.Fatal("Could not execute info command: ", err)
-	}
+//func Test_Positive_Send_Info(t *testing.T) {
+//	tp := Tplink{}
+//	sn := Scan{}
+//	ip, err := sn.FindFirstIP()
+//	if err != nil {
+//		t.Fatalf("Could not find any IP")
+//	}
+//	result, err := tp.Send(ip, "{\"system\":{\"get_sysinfo\":{}}}")
+//	if err != nil {
+//		t.Fatal("Could not execute info command: ", err)
+//	}
+//
+//	glog.Info(result)
+//}
 
-	glog.Info(result)
-}
-
+//TODO: This only works locally
 //func Test_Positive_Send_PlugOn(t *testing.T) {
 //	tp := Tplink{}
 //	sn := Scan{}
@@ -62,6 +59,7 @@ func Test_Positive_Send_Info(t *testing.T) {
 //	glog.Info(result)
 //}
 
+//TODO: This only works locally
 //func Test_Positive_Send_PlugOff(t *testing.T) {
 //	tp := Tplink{}
 //	sn := Scan{}
@@ -102,5 +100,4 @@ func Test_Negative_Send_BadCall(t *testing.T) {
 	if bad_data_result != "" || err == nil {
 		t.Fatalf("Expected command not to work")
 	}
-
 }

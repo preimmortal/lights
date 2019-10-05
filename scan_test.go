@@ -48,12 +48,13 @@ func TestFindDefaultRoute(t *testing.T) {
 //	}
 //}
 
-func TestFindFirstIP(t *testing.T) {
-	db := &Database{}
-	s := Scan{db}
-	ip, err := s.FindFirstIP()
-	if err != nil {
-		t.Fatalf("Could not find any IP: %v", err)
-	}
-	t.Log("Found IP: ", ip)
-}
+//TODO: This only works locally
+//func TestFindFirstIP(t *testing.T) {
+//	db := &Database{}
+//	s := Scan{db}
+//	ip, err := s.FindFirstIP()
+//	if err != nil {
+//		t.Fatalf("Could not find any IP: %v", err)
+//	}
+//	t.Log("Found IP: ", ip)
+//}

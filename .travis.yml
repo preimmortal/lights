@@ -3,13 +3,6 @@ language: go
 go:
   1.12.9
 
-os:
-  - linux
-
-dist: trusty
-sudo: false
-install: true
-
 scripts:
   - env GO111MODULE=on go build
   - env GO111MODULE=on go test
