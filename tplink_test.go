@@ -81,6 +81,7 @@ func Test_Negative_Send_BadIP(t *testing.T) {
 	t.Log("Negative Test - Bad IP")
 	// Test  Bad IP
 	bad_ip_result, err := tp.Send("999.999.999.999", "{\"system\":{\"get_sysinfo\":{}}}")
+	t.Logf("Got IP %s, Err %v", bad_ip_result, err)
 	if bad_ip_result != "" || err == nil {
 		t.Fatalf("Expected command not to work")
 	}
