@@ -17,6 +17,7 @@ type DBScan struct {
 var db *memdb.MemDB
 
 func (d *Database) Init() error {
+	log.Print("Initializing Database")
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
 			"scan": &memdb.TableSchema{
@@ -42,6 +43,7 @@ func (d *Database) Init() error {
 }
 
 func (d *Database) Insert(name, ip, port string) error {
+	log.Printf("Inserting into database: %s - %s - %s", name, ip, port)
 	data := &DBScan{name, ip, port}
 	txn := db.Txn(true)
 	if err := txn.Insert("scan", data); err != nil {

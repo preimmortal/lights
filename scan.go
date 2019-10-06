@@ -101,16 +101,20 @@ func (s *Scan) Start() error {
 	log.Print("Starting Scanner")
 	ip, err := s.findDefaultRoute()
 	if err != nil {
+		log.Print("Could not find iprange", err)
 		return err
 	}
 	iprange := fmt.Sprintf("%s/24", ip.String())
 
-	hostlist, err := s.Scan(iprange)
-	if err != nil {
-		return err
-	}
-
 	for {
+		log.Print("Scanning IP Range: ", iprange)
+		hostlist, err := s.Scan(iprange)
+		if err != nil {
+			log.Print("Could not scan ips")
+			time.Sleep(time.Minute)
+			continue
+		}
+
 		for _, host := range hostlist.Hosts {
 			target := host.Addresses[0].Addr
 			for _, port := range host.Ports {
@@ -120,13 +124,15 @@ func (s *Scan) Start() error {
 					// Check if already in db
 					b, err := s.Db.HasIp(target)
 					if err != nil {
-						return err
+						log.Print("WARNING: Could not check for IP in database: ", err)
+						break
 					}
 					if !b {
 						log.Printf("Inserting %s into db\n", target)
 						err := s.Db.Insert("TPLink_Plug", target, strconv.FormatUint(uint64(port.ID), 10))
 						if err != nil {
-							return err
+							log.Print("WARNING: Could not insert IP in database: ", err)
+							break
 						}
 					} else {
 						log.Printf("Skipping %s already db\n", target)
