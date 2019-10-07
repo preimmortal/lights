@@ -116,7 +116,7 @@ func main() {
 
 	//Start the Scanner
 	scanner := &smarthome.Scan{Db: SmartHomeDB}
-	go scanner.Start()
+	go scanner.Start(false)
 
 	//Start Web Server
 	handleRequests()

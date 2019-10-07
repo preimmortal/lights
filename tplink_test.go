@@ -1,6 +1,7 @@
 package smarthome
 
 import (
+	"log"
 	"testing"
 )
 
@@ -26,24 +27,21 @@ func TestDecrypt(t *testing.T) {
 	}
 }
 
-//TODO: This only works locally
-// Test_Positive_Send implements a positive send ip test
-//func Test_Positive_Send_Info(t *testing.T) {
-//	tp := Tplink{}
-//	sn := Scan{}
-//	ip, err := sn.FindFirstIP()
-//	if err != nil {
-//		t.Fatalf("Could not find any IP")
-//	}
-//	result, err := tp.Send(ip, "{\"system\":{\"get_sysinfo\":{}}}")
-//	if err != nil {
-//		t.Fatal("Could not execute info command: ", err)
-//	}
-//
-//	log.Print(result)
-//}
+func Test_Positive_Send_Info(t *testing.T) {
+	tp := Tplink{}
+	sn := Scan{}
+	ip, err := sn.FindFirstIP()
+	if err != nil {
+		t.Fatalf("Could not find any IP")
+	}
+	result, err := tp.Send(ip, "{\"system\":{\"get_sysinfo\":{}}}")
+	if err != nil {
+		t.Fatal("Could not execute info command: ", err)
+	}
 
-//TODO: This only works locally
+	log.Print(result)
+}
+
 //func Test_Positive_Send_PlugOn(t *testing.T) {
 //	tp := Tplink{}
 //	sn := Scan{}
@@ -59,7 +57,6 @@ func TestDecrypt(t *testing.T) {
 //	log.Print(result)
 //}
 
-//TODO: This only works locally
 //func Test_Positive_Send_PlugOff(t *testing.T) {
 //	tp := Tplink{}
 //	sn := Scan{}
@@ -86,18 +83,17 @@ func Test_Negative_Send_BadIP(t *testing.T) {
 	}
 }
 
-//TODO: This only works locally
-//func Test_Negative_Send_BadCall(t *testing.T) {
-//	tp := Tplink{}
-//	sn := Scan{}
-//	ip, err := sn.FindFirstIP()
-//	if err != nil {
-//		t.Fatalf("Could not find any IP")
-//	}
-//	t.Log("Negative Test - Bad Call")
-//	// Test  Bad Call
-//	bad_data_result, err := tp.Send(ip, "")
-//	if bad_data_result != "" || err == nil {
-//		t.Fatalf("Expected command not to work")
-//	}
-//}
+func Test_Negative_Send_BadCall(t *testing.T) {
+	tp := Tplink{}
+	sn := Scan{}
+	ip, err := sn.FindFirstIP()
+	if err != nil {
+		t.Fatalf("Could not find any IP")
+	}
+	t.Log("Negative Test - Bad Call")
+	// Test  Bad Call
+	bad_data_result, err := tp.Send(ip, "")
+	if bad_data_result != "" || err == nil {
+		t.Fatalf("Expected command not to work")
+	}
+}

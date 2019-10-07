@@ -97,7 +97,7 @@ func (s *Scan) FindFirstIP() (string, error) {
 
 }
 
-func (s *Scan) Start() error {
+func (s *Scan) Start(test bool) error {
 	log.Print("Starting Scanner")
 	ip, err := s.findDefaultRoute()
 	if err != nil {
@@ -141,5 +141,9 @@ func (s *Scan) Start() error {
 			}
 		}
 		time.Sleep(time.Minute)
+		if test {
+			break
+		}
 	}
+	return nil
 }
