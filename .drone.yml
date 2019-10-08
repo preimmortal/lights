@@ -1,0 +1,26 @@
+workspace:
+  base: /build
+
+pipeline:
+  build-image:
+    image: docker
+    commands:
+      - docker  build . --target development -t api-build:${DRONE_BUILD_NUMBER} -t api-build:latest
+    volumes:
+      - /var/rune/docker.sock:/var/run/docker.sock
+
+  test:
+    image: "api-build:${DRONE_BUILD_NUMBER}"
+    commands:
+      - go test go test -v --cover github.com/preimmortal/smarthome
+
+  delete-build-image:
+    image: docker
+    commands:
+      - docker rmi api-build:${DRONE_BUILD_NUMBER}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      status:
+        - success
+        - failure
