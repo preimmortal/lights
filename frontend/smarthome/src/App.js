@@ -1,20 +1,26 @@
 import React, {Component} from 'react';
-import Navbar from './Navbar';
+import { BrowserRouter, Route, Switch} from 'react-router-dom'
+
 import './slate/bootstrap.min.css';
+
+import Home from './components/Home';
+import Devices from './components/Devices';
+import Error from './components/Error'
+import Navbar from './components/Navbar';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <BrowserRouter>
         <div>
           <Navbar />
+          <Switch>
+            <Route path="/" component={Home} exact />
+            <Route path="/devices" component={Devices} />
+            <Route component={Error} />
+          </Switch>
         </div>
-        <header className="App-header">
-          <p>
-            Hello
-          </p>
-        </header>
-      </div>
+      </BrowserRouter>
     );
   }
 }
