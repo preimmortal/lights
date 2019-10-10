@@ -6,6 +6,9 @@ import (
 
 func TestScan(t *testing.T) {
 	db := &Database{}
+	if err := db.Init(); err != nil {
+		t.Fatal("Could not initialize SmartHome Database")
+	}
 	s := Scan{db}
 	local_ip := "192.168.1.0/24"
 	t.Log("Scanning ", local_ip)
@@ -30,6 +33,9 @@ func TestScan(t *testing.T) {
 
 func TestFindDefaultRoute(t *testing.T) {
 	db := &Database{}
+	if err := db.Init(); err != nil {
+		t.Fatal("Could not initialize SmartHome Database")
+	}
 	s := Scan{db}
 	t.Log("Finding Default Route")
 	ip, err := s.findDefaultRoute()
@@ -42,6 +48,9 @@ func TestFindDefaultRoute(t *testing.T) {
 
 func TestStart(t *testing.T) {
 	db := &Database{}
+	if err := db.Init(); err != nil {
+		t.Fatal("Could not initialize SmartHome Database")
+	}
 	s := Scan{db}
 	if err := s.Start(true); err != nil {
 		t.Fatalf("Could not start scan: %v", err)
@@ -50,6 +59,9 @@ func TestStart(t *testing.T) {
 
 func TestFindFirstIP(t *testing.T) {
 	db := &Database{}
+	if err := db.Init(); err != nil {
+		t.Fatal("Could not initialize SmartHome Database")
+	}
 	s := Scan{db}
 	ip, err := s.FindFirstIP()
 	if err != nil {

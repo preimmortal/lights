@@ -2,12 +2,12 @@ package smarthome
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
@@ -98,6 +98,12 @@ func (s *Scan) FindFirstIP() (string, error) {
 }
 
 func (s *Scan) Start(test bool) error {
+	if s.Db == nil {
+		return errors.New("No Database declared")
+	}
+
+	Tp := &Tplink{}
+
 	log.Print("Starting Scanner")
 	ip, err := s.findDefaultRoute()
 	if err != nil {
@@ -129,7 +135,26 @@ func (s *Scan) Start(test bool) error {
 					}
 					if !b {
 						log.Printf("Inserting %s into db\n", target)
-						err := s.Db.Insert("TPLink_Plug", target, strconv.FormatUint(uint64(port.ID), 10))
+						infoBytes, err := Tp.Send(target, TPLINK_API_INFO)
+						if err != nil {
+							return err
+						}
+						var info *TplinkInfo
+						err = json.Unmarshal(infoBytes, &info)
+						if err != nil {
+							return err
+						}
+						log.Print(info)
+
+						var state string
+						switch info.System.GetSysInfo.RelayState {
+						case 1:
+							state = "On"
+						case 0:
+							state = "Off"
+						}
+
+						err = s.Db.Insert(info.System.GetSysInfo.DevName, target, info.System.GetSysInfo.Alias, state)
 						if err != nil {
 							log.Print("WARNING: Could not insert IP in database: ", err)
 							break
@@ -140,10 +165,11 @@ func (s *Scan) Start(test bool) error {
 				}
 			}
 		}
-		time.Sleep(time.Minute)
 		if test {
+			log.Printf("Running in test mode")
 			break
 		}
+		time.Sleep(time.Minute)
 	}
 	return nil
 }

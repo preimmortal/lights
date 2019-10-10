@@ -10,18 +10,43 @@ import (
 	"net"
 )
 
-//type Info struct {
-//	System     string     `json:"system"`
-//	GetSysInfo System     `json:"get_sysinfo"`
-//	ActiveMode GetSysInfo `json:"active_mode"`
-//}
+type TplinkInfo struct {
+	System struct {
+		GetSysInfo struct {
+			ErrorCode  int     `json:"err_code"`
+			SwVersion  string  `json:"sw_ver"`
+			HwVersion  string  `json:"hw_ver"`
+			Type       string  `json:"type"`
+			Model      string  `json:"model"`
+			Mac        string  `json:"mac"`
+			DeviceId   string  `json:"deviceId"`
+			HwID       string  `json:"hwId"`
+			FwID       string  `json:"fwId"`
+			OemId      string  `json:"oemId"`
+			Alias      string  `json:"alias"`
+			DevName    string  `json:"dev_name"`
+			IconHash   string  `json:"icon_hash"`
+			RelayState int     `json:"relay_state"`
+			OnTime     int     `json:"on_time"`
+			ActiveMode string  `json:"active_mode"`
+			Feature    string  `json:"feature"`
+			Updating   int     `json:"updating"`
+			Rssi       int     `json:"rssi"`
+			LedOff     int     `json:"led_off"`
+			Latitude   float32 `json:"latitude"`
+			Longitude  float32 `json:"longitude"`
+		} `json:"get_sysinfo"`
+	} `json:"system"`
+}
 type Tplink struct{}
 
-const TPLINK_API_PORT = "9999"
-const TPLINK_API_PORT_INT = 9999
-const TPLINK_API_INFO = "{\"system\":{\"get_sysinfo\":{}}}"
-const TPLINK_API_RELAY_ON = "{\"system\":{\"set_relay_state\":{\"state\":1}}}"
-const TPLINK_API_RELAY_OFF = "{\"system\":{\"set_relay_state\":{\"state\":0}}}"
+const (
+	TPLINK_API_PORT      = "9999"
+	TPLINK_API_PORT_INT  = 9999
+	TPLINK_API_INFO      = "{\"system\":{\"get_sysinfo\":{}}}"
+	TPLINK_API_RELAY_ON  = "{\"system\":{\"set_relay_state\":{\"state\":1}}}"
+	TPLINK_API_RELAY_OFF = "{\"system\":{\"set_relay_state\":{\"state\":0}}}"
+)
 
 func (t Tplink) encrypt(unenc string) []byte {
 	key := 171
@@ -35,7 +60,7 @@ func (t Tplink) encrypt(unenc string) []byte {
 	return result
 }
 
-func (t Tplink) decrypt(enc []byte) string {
+func (t Tplink) decrypt(enc []byte) []byte {
 	key := 171
 	result := []byte("")
 	for _, c := range enc {
@@ -43,27 +68,27 @@ func (t Tplink) decrypt(enc []byte) string {
 		key = int(c)
 		result = append(result, byte(a))
 	}
-	return string(result)
+	return result
 }
 
-func (t Tplink) Send(ip string, command string) (string, error) {
+func (t Tplink) Send(ip, command string) ([]byte, error) {
 	log.Printf("Sending command \"%s\"", command)
 	address := net.JoinHostPort(ip, TPLINK_API_PORT)
 	log.Printf("\tAddress: \"%s\" ", address)
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer conn.Close()
 	fmt.Fprintf(conn, string(t.encrypt(command)))
 
 	result, err := ioutil.ReadAll(conn)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if len(result) == 0 {
-		return "", errors.New("No results read")
+		return nil, errors.New("No results read")
 	}
 
 	json.Marshal(t.decrypt(result[4:]))

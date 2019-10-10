@@ -13,9 +13,10 @@ import (
 var SmartHomeDB *smarthome.Database
 
 type Device struct {
-	Name string `json:"name"`
-	Ip   string `json:"ip"`
-	Port string `json:"port"`
+	Name  string `json:"name"`
+	Ip    string `json:"ip"`
+	Alias string `json:"alias"`
+	State string `json:"state"`
 }
 
 type Devices []Device
@@ -28,9 +29,9 @@ func GetDevices(w http.ResponseWriter, r *http.Request) {
 
 	data := Devices{}
 	for obj := it.Next(); obj != nil; obj = it.Next() {
-		p := obj.(*smarthome.DBScan)
-		log.Printf("  %s - %s - %s\n", p.Name, p.Ip, p.Port)
-		device := Device{Name: p.Name, Ip: p.Ip, Port: p.Port}
+		p := obj.(*smarthome.DBDevice)
+		log.Printf("  %s - %s - %s - %s\n", p.Name, p.Ip, p.Alias, p.State)
+		device := Device{Name: p.Name, Ip: p.Ip, Alias: p.Alias, State: p.State}
 		data = append(data, device)
 	}
 

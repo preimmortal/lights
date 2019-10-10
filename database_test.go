@@ -12,7 +12,7 @@ func TestDatabase(t *testing.T) {
 	}
 
 	t.Logf("Testing Database Insert")
-	err := db.Insert("TPLink_Plug", "192.168.1.105", "9999")
+	err := db.Insert("TPLink_Plug", "192.168.1.105", "Room", "Off")
 	if err != nil {
 		t.Fatalf("Could not write database: %v", err)
 	}
@@ -24,8 +24,8 @@ func TestDatabase(t *testing.T) {
 	}
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
-		p := obj.(*DBScan)
-		t.Logf("  %s - %s - %s\n", p.Name, p.Ip, p.Port)
+		p := obj.(*DBDevice)
+		t.Logf("  %s - %s - %s - %s\n", p.Name, p.Ip, p.Alias, p.State)
 	}
 
 	check1, err := db.HasIp("192.168.1.105")

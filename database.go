@@ -8,10 +8,11 @@ import (
 
 type Database struct{}
 
-type DBScan struct {
-	Name string
-	Ip   string
-	Port string
+type DBDevice struct {
+	Name  string
+	Ip    string
+	Alias string
+	State string
 }
 
 var db *memdb.MemDB
@@ -20,8 +21,8 @@ func (d *Database) Init() error {
 	log.Print("Initializing Database")
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
-			"scan": &memdb.TableSchema{
-				Name: "scan",
+			"device": &memdb.TableSchema{
+				Name: "device",
 				Indexes: map[string]*memdb.IndexSchema{
 					"id": &memdb.IndexSchema{
 						Name:    "id",
@@ -42,11 +43,11 @@ func (d *Database) Init() error {
 	return nil
 }
 
-func (d *Database) Insert(name, ip, port string) error {
-	log.Printf("Inserting into database: %s - %s - %s", name, ip, port)
-	data := &DBScan{name, ip, port}
+func (d *Database) Insert(name, ip, alias, state string) error {
+	log.Printf("Inserting into database: %s - %s - %s - %s", name, ip, alias, state)
+	data := &DBDevice{name, ip, alias, state}
 	txn := db.Txn(true)
-	if err := txn.Insert("scan", data); err != nil {
+	if err := txn.Insert("device", data); err != nil {
 		return err
 	}
 
@@ -59,7 +60,7 @@ func (d *Database) HasIp(ip string) (bool, error) {
 	txn := db.Txn(false)
 	defer txn.Abort()
 
-	raw, err := txn.First("scan", "id", ip)
+	raw, err := txn.First("device", "id", ip)
 	if err != nil {
 		return false, err
 	}
@@ -75,7 +76,7 @@ func (d *Database) ReadAll() (memdb.ResultIterator, error) {
 	txn := db.Txn(false)
 	defer txn.Abort()
 
-	it, err := txn.Get("scan", "id")
+	it, err := txn.Get("device", "id")
 	if err != nil {
 		return nil, err
 	}
