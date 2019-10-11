@@ -24,7 +24,7 @@ type Devices []Device
 func GetDevices(w http.ResponseWriter, r *http.Request) {
 	it, err := SmartHomeDB.ReadAll()
 	if err != nil {
-		log.Fatalf("Could not read from db: %v", err)
+		log.Printf("Could not read from db: %v", err)
 	}
 
 	data := Devices{}
@@ -46,10 +46,10 @@ func GetDeviceInfo(w http.ResponseWriter, r *http.Request) {
 	log.Print("\tDevice: ", vars["deviceip"])
 	info, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
 	if err != nil {
-		log.Fatalf("Could not send info request: %v", err)
+		log.Printf("Could not send info request: %v", err)
 	}
-	log.Print("Endpoint Hit: Post Device Info endpoint")
-	json.NewEncoder(w).Encode(info)
+	log.Print("Endpoint Hit: Post Device Info endpoint -> ", string(info))
+	json.NewEncoder(w).Encode(string(info))
 }
 
 type API_CONTRACT_PostDeviceAction struct {
@@ -65,7 +65,7 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 
 	//Extract Body information
 	if err := json.NewDecoder(r.Body).Decode(api); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	log.Print("Got Action: ", api.State)
@@ -76,7 +76,7 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 	case "off":
 		action = smarthome.TPLINK_API_RELAY_OFF
 	default:
-		log.Fatal(errors.New("state must be defined as \"on\" or \"off\""))
+		log.Print(errors.New("state must be defined as \"on\" or \"off\""))
 	}
 
 	//Initialize TPLink Obj
@@ -87,7 +87,7 @@ func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 	// Send Action
 	info, err := tp.Send(vars["deviceip"], action)
 	if err != nil {
-		log.Fatalf("Could not send info request: %v", err)
+		log.Printf("Could not send info request: %v", err)
 	}
 	log.Print("Endpoint Hit: Post Device Action endpoint")
 	json.NewEncoder(w).Encode(info)
