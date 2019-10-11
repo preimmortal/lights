@@ -18,26 +18,30 @@ class DeviceInfo extends Component {
     }
     componentDidMount() {
         const { ip } = this.props.match.params
-        console.log(`http://localhost:8081/devices/${ip}`)
+        console.log("GET" , `http://localhost:8081/devices/${ip}`)
         fetch(`http://localhost:8081/devices/${ip}`)
         .then(res => res.json())
         .then((data) => {
-            console.log(data)
             this.setState({ deviceinfo: data })
         })
         .catch(console.log)
     }
     render() {
         const {deviceinfo} = this.state;
-        console.log(this.state)
+        if (deviceinfo) {
+            return (
+                <div>
+                    <h2>Device Info for: {this.props.match.params.ip}</h2>
+                    <div><pre>{JSON.stringify(deviceinfo, null, '    ') }</pre></div>
+                </div>
+            )
+        }
         return (
             <div>
-                <h2>Device Info for: {this.props.match.params.ip}</h2>
-                <div><pre>{JSON.stringify(deviceinfo, null, 2) }</pre></div>
+                <h2>No Device Info for: {this.props.match.params.ip}</h2>
             </div>
         )
     }
-
 }
 
 export default DeviceInfo;

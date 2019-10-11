@@ -149,9 +149,9 @@ func (s *Scan) Start(test bool) error {
 						var state string
 						switch info.System.GetSysInfo.RelayState {
 						case 1:
-							state = "On"
+							state = "on"
 						case 0:
-							state = "Off"
+							state = "off"
 						}
 
 						err = s.Db.Insert(info.System.GetSysInfo.DevName, target, info.System.GetSysInfo.Alias, state)

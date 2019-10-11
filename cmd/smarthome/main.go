@@ -58,6 +58,9 @@ type API_CONTRACT_PostDeviceAction struct {
 
 func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 	log.Print("Posting device action")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	api := &API_CONTRACT_PostDeviceAction{}
