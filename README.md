@@ -13,7 +13,7 @@ docker run --network host github.com/preimmortal/smarthome:latest
 
 TODO:
     FE:
-        - Disable CORS to allow client to make CORS request to backend
+        - Set up docker for build/deployment
 
     High Level:
         x CI/CD Pipeline
