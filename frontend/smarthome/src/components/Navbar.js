@@ -5,9 +5,9 @@ import '../slate/bootstrap.min.css';
 class Navbar extends Component {
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+            <nav className="navbar navbar-expand-lg navbar-dark bg-primary navbar-fixed-top">
                 <a className="navbar-brand" href="/">Smarthome</a>
-                <div className="collapse navbar-collapse" id="navbarColor01">
+                <div className="navbar-collapse" id="navbarColor01">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item active">
                             <NavLink to="/" className="nav-link">Home <span className="sr-only">(current)</span></NavLink>
