@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 
 import '../slate/bootstrap.min.css';
 
+import DeviceState from './DeviceState'
+
 
 class Devices extends Component {
     constructor(props) {
@@ -25,30 +27,6 @@ class Devices extends Component {
         .catch(console.log)
     }
 
-    sendToggle(ip, state) {
-        console.log(`POST http://localhost:8081/devices/${ip}`)
-        console.log({ip})
-        console.log(`Toggle: {state}`)
-        console.log({state})
-        const newState = state === "off" ? "on" : "off"
-        console.log({newState})
-        fetch(`http://localhost:8081/devices/${ip}`, {
-            crossDomain: true,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                state: `${newState}`,
-            })
-        })
-        .then(res => res.json())
-        .then((data) => {
-            console.log(data)
-        })
-        .catch(console.log)
-    }
 
     render() {
         const {devices} = this.state;
@@ -79,7 +57,7 @@ class Devices extends Component {
                                         <a href={'/devices/' + device.ip}>{device.ip}</a>
                                     </td>
                                     <td>
-                                        <button className="btn btn-primary btn-sm" onClick={this.sendToggle.bind(this, device.ip, device.state)}>{device.state}</button>
+                                        <DeviceState ip={device.ip}/>
                                     </td>
                                 </tr>
                             )}

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router-dom';
 
 import '../slate/bootstrap.min.css';
 
@@ -33,6 +34,9 @@ class DeviceInfo extends Component {
                 <div>
                     <h2>Device Info for: {this.props.match.params.ip}</h2>
                     <div><pre>{JSON.stringify(deviceinfo, null, '    ') }</pre></div>
+                    <Link to="/devices">
+                        <button className="btn btn-primary">Back</button>
+                    </Link>
                 </div>
             )
         }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/preimmortal/smarthome"
 )
@@ -44,12 +45,22 @@ func GetDeviceInfo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	tp := smarthome.Tplink{}
 	log.Print("\tDevice: ", vars["deviceip"])
-	info, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
+	//info, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
+	infoBytes, err := tp.Send(vars["deviceip"], smarthome.TPLINK_API_INFO)
+	if err != nil {
+		log.Print("Could not get info: ", err)
+	}
+	var info *smarthome.TplinkInfo
+	err = json.Unmarshal(infoBytes, &info)
+	if err != nil {
+		log.Print("Could not encode the info: ", err)
+	}
+	log.Print(info)
 	if err != nil {
 		log.Printf("Could not send info request: %v", err)
 	}
-	log.Print("Endpoint Hit: Post Device Info endpoint -> ", string(info))
-	json.NewEncoder(w).Encode(string(info))
+	log.Print("Endpoint Hit: Post Device Info endpoint -> ", info)
+	json.NewEncoder(w).Encode(info)
 }
 
 type API_CONTRACT_PostDeviceAction struct {
@@ -58,9 +69,6 @@ type API_CONTRACT_PostDeviceAction struct {
 
 func PostDeviceAction(w http.ResponseWriter, r *http.Request) {
 	log.Print("Posting device action")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	api := &API_CONTRACT_PostDeviceAction{}
@@ -101,12 +109,16 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
+	headersOk := handlers.AllowedHeaders([]string{"Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST"})
+
 	router := mux.NewRouter()
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/devices", GetDevices).Methods("GET")
 	router.HandleFunc("/devices/{deviceip}", GetDeviceInfo).Methods("GET")
 	router.HandleFunc("/devices/{deviceip}", PostDeviceAction).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(headersOk, originsOk, methodsOk)(router)))
 }
 
 func main() {
