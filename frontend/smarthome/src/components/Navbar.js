@@ -5,7 +5,7 @@ import '../slate/bootstrap.min.css';
 class Navbar extends Component {
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-dark bg-primary navbar-fixed-top">
+            <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
                 <a className="navbar-brand" href="/">Smarthome</a>
                 <div className="navbar-collapse" id="navbarColor01">
                     <ul className="navbar-nav mr-auto">

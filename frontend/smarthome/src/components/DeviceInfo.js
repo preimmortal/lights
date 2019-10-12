@@ -19,8 +19,9 @@ class DeviceInfo extends Component {
     }
     componentDidMount() {
         const { ip } = this.props.match.params
-        console.log("GET" , `http://localhost:8081/devices/${ip}`)
-        fetch(`http://localhost:8081/devices/${ip}`)
+        const fetchUrl = process.env.REACT_APP_BACKEND_URL + "/devices/" + ip
+        console.log("GET" , fetchUrl)
+        fetch(fetchUrl)
         .then(res => res.json())
         .then((data) => {
             this.setState({ deviceinfo: data })

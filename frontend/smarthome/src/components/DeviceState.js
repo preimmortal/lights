@@ -17,8 +17,9 @@ class DeviceInfo extends Component {
         }
     }
     componentDidMount() {
-        console.log("GET" , `http://localhost:8081/devices/${this.props.ip}`)
-        fetch(`http://localhost:8081/devices/${this.props.ip}`)
+        const fetchUrl = process.env.REACT_APP_BACKEND_URL + "/devices/" + this.props.ip
+        console.log("GET" , fetchUrl)
+        fetch(fetchUrl)
         .then(res => res.json())
         .then((data) => {
             this.setState({ deviceinfo: data })
@@ -27,9 +28,10 @@ class DeviceInfo extends Component {
     }
 
     sendToggle(ip, state) {
-        console.log(`POST http://localhost:8081/devices/${this.props.ip}`)
+        const postUrl = process.env.REACT_APP_BACKEND_URL + "/devices/" + this.props.ip
+        console.log("POST", {postUrl})
         const newState = state === "off" ? "on" : "off"
-        fetch(`http://localhost:8081/devices/${this.props.ip}`, {
+        fetch(postUrl, {
             crossDomain: true,
             method: 'POST',
             headers: {
@@ -44,8 +46,9 @@ class DeviceInfo extends Component {
         .then((data) => {
             console.log(data)
             // Send another request to update info
-            console.log("GET" , `http://localhost:8081/devices/${this.props.ip}`)
-            fetch(`http://localhost:8081/devices/${this.props.ip}`)
+            const fetchUrl = process.env.REACT_APP_BACKEND_URL + "/devices/" + this.props.ip
+            console.log("GET" , fetchUrl)
+            fetch(fetchUrl)
             .then(res => res.json())
             .then((data) => {
                 this.setState({ deviceinfo: data })

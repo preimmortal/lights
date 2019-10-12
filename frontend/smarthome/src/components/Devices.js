@@ -19,7 +19,8 @@ class Devices extends Component {
         }
     }
     componentDidMount() {
-        fetch('http://localhost:8081/devices')
+        const fetchUrl = process.env.REACT_APP_BACKEND_URL + "/devices"
+        fetch(fetchUrl)
         .then(res => res.json())
         .then((data) => {
             this.setState({ devices: data })
