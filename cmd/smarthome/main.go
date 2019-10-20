@@ -33,7 +33,7 @@ func GetDevices(w http.ResponseWriter, r *http.Request) {
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*smarthome.DBDevice)
 		log.Printf("  %s - %s - %s - %s\n", p.Name, p.Ip, p.Alias, p.State)
-		device := Device{Name: p.Name, Ip: p.Ip, Alias: p.Alias, State: p.State}
+		device := Device{Key: p.Key, Name: p.Name, Ip: p.Ip, Alias: p.Alias, State: p.State}
 		data = append(data, device)
 	}
 
