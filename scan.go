@@ -154,7 +154,7 @@ func (s *Scan) Start(test bool) error {
 							state = "off"
 						}
 
-						err = s.Db.Insert(info.System.GetSysInfo.DevName, target, info.System.GetSysInfo.Alias, state)
+						err = s.Db.Insert(target, info.System.GetSysInfo.DevName, target, info.System.GetSysInfo.Alias, state)
 						if err != nil {
 							log.Print("WARNING: Could not insert IP in database: ", err)
 							break

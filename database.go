@@ -9,6 +9,7 @@ import (
 type Database struct{}
 
 type DBDevice struct {
+	Key   string
 	Name  string
 	Ip    string
 	Alias string
@@ -43,9 +44,9 @@ func (d *Database) Init() error {
 	return nil
 }
 
-func (d *Database) Insert(name, ip, alias, state string) error {
-	log.Printf("Inserting into database: %s - %s - %s - %s", name, ip, alias, state)
-	data := &DBDevice{name, ip, alias, state}
+func (d *Database) Insert(key, name, ip, alias, state string) error {
+	log.Printf("Inserting into database: %s - %s - %s - %s - %s", key, name, ip, alias, state)
+	data := &DBDevice{key, name, ip, alias, state}
 	txn := db.Txn(true)
 	if err := txn.Insert("device", data); err != nil {
 		return err

@@ -14,6 +14,7 @@ import (
 var SmartHomeDB *smarthome.Database
 
 type Device struct {
+	Key   string `json:"key"`
 	Name  string `json:"name"`
 	Ip    string `json:"ip"`
 	Alias string `json:"alias"`
