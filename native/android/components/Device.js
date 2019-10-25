@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator } from 'react-native';
+import { 
+    StyleSheet, 
+    Text, 
+    View, 
+    FlatList, 
+    ActivityIndicator 
+} from 'react-native';
+
+import DeviceState from './DeviceState'
 
 
 export default class Devices extends Component {
@@ -12,7 +20,8 @@ export default class Devices extends Component {
     }
 
     componentDidMount() {
-        fetch("http://192.168.1.203:8081/devices")
+        const fetchUrl = "http://192.168.1.203:8081/devices"
+        fetch(fetchUrl)
         .then(res => res.json())
         .then((data) => {
             this.setState({
@@ -25,8 +34,18 @@ export default class Devices extends Component {
     }
 
     render() {
+        function Item({data}) {
+            return (
+                <View style={styles.item}>
+                    <Text style={styles.title}>{data.alias}</Text>
+                    <DeviceState ip={data.ip} />
+                </View>
+            )
+        }
+        console.log(this.state.devices)
+
         if(this.state.isLoading){
-            return(
+            return (
               <View style={{flex: 1, padding: 20}}>
                 <ActivityIndicator/>
               </View>
@@ -36,8 +55,8 @@ export default class Devices extends Component {
             <View style={styles.container}>
                 <FlatList
                     data={this.state.devices}
-                    renderItem={({item}) => <Text style={styles.item}>{item.ip} - {item.alias} - {item.name}</Text>}
-                    keyExtractor={({id}, index) => id}
+                    renderItem={({item}) => <Item data={item}></Item>}
+                    keyExtractor={({ip}, index) => ip}
                 />
             </View>
         );
@@ -53,6 +72,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     item: {
+        flex: 1,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 30,
+    },
+    header: {
+        flex: 1,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 30,
+    },
+    title: {
         flex: 1,
         color: 'white',
         fontWeight: 'bold',

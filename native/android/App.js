@@ -7,12 +7,6 @@ export default function App() {
     <View style={styles.container}>
         <Text style={styles.text}>Smarthome</Text>
         <Devices />
-        <Button onPress={() => {
-            alert('You tapped the button');
-        }}
-        title="Press Me"
-        color="#14347F"
-        />
     </View>
   );
 }

@@ -12,6 +12,9 @@ docker build -t github.com/preimmortal/smarthome:latest .
 docker run --network host github.com/preimmortal/smarthome:latest
 
 TODO:
+    BE:
+        - Figure out how to organize my data models (i.e. DBDevice and Device should be the same model) 
+            - Data input and output should rely solely on this data model
     FE:
         - Set up docker for build/deployment
 

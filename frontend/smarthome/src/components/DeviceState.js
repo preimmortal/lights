@@ -61,7 +61,7 @@ class DeviceInfo extends Component {
 
     render() {
         const {deviceinfo} = this.state;
-        const { ip } = this.props.ip
+        const {ip} = this.props.ip
         if (deviceinfo) {
             const state = deviceinfo.system.get_sysinfo.relay_state === 1 ? "on" : "off"
             return (
