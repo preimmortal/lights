@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import Devices from './components/Device'
+import {StyleSheet, Text, View} from 'react-native';
+import Devices from './components/Device';
 
 export default function App() {
   return (
