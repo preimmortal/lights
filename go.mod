@@ -11,6 +11,7 @@ require (
 	github.com/hashicorp/go-memdb v1.0.3
 	github.com/miekg/dns v1.1.19 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	golang.org/x/net v0.0.0-20191002035440-2ec189313ef0 // indirect
 )
